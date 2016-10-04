@@ -2,7 +2,7 @@ module-name:
     HTMLFileSetUtils
 
 module-description:
-    A KBase module
+    Utility for uploading an HTML file set to the KBase data stores.
 
 service-language:
     python
