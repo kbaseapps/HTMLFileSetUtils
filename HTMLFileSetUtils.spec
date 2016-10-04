@@ -40,7 +40,7 @@ module HTMLFileSetUtils {
 			where X is the workspace ID, Y is the object ID, and Z is the
 			version.
 	 */
-	typdef structure {
+	typedef structure {
 		string obj_id;
 	} UploadHTMLSetOutput;
 	
