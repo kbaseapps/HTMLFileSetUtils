@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
+import six
+from DataFileUtil.DataFileUtilClient import DataFileUtil
+import os
+import tempfile
+import base64
+from WsLargeDataIO.WsLargeDataIOClient import WsLargeDataIO
 #END_HEADER
 
 
@@ -21,7 +27,7 @@ class HTMLFileSetUtils:
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/mrcreosote/HTMLFileSetUtils"
     GIT_COMMIT_HASH = "ae0cc4b030a8fecc464ca75a4e00fe984e8cc378"
-    
+
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
 
@@ -29,9 +35,9 @@ class HTMLFileSetUtils:
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
+        self.callback_url = config['SDK_CALLBACK_URL']
         #END_CONSTRUCTOR
         pass
-    
 
     def upload_html_set(self, ctx, params):
         """
@@ -56,6 +62,51 @@ class HTMLFileSetUtils:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN upload_html_set
+        del ctx
+        wsid = params.get('wsid')
+        wsname = params.get('wsname')
+        if not self.xor(wsid, wsname):
+            raise ValueError(
+                'Exactly one of the workspace ID or name must be provided')
+        dfu = DataFileUtil(self.callback_url)
+        if wsname:
+            self.log('Translating workspace name to id')
+            if not isinstance(wsname, six.string_types):
+                raise ValueError('wsname must be a string')
+            wsid = dfu.ws_name_to_id(wsname)
+            self.log('translation done')
+        del wsname
+        objid = params.get('objid')
+        name = params.get('name')
+        if not self.xor(objid, name):
+            raise ValueError(
+                'Exactly one of the object ID or name must be provided')
+        htmlpath = params.get('path')
+        if not htmlpath:
+            raise ValueError('path parameter is required')
+        htmlpath = os.path.abspath(os.path.expanduser(htmlpath))
+        if htmlpath == os.path.sep:
+            raise ValueError("No, you can't zip up the root directory")
+        if not os.path.isdir(htmlpath):
+            raise ValueError('path must be a directory')
+        zipfile = dfu.pack_file({'file_path': htmlpath, 'pack': 'zip'})
+        tf = tempfile.mkstemp()
+        with open(tf, 'w') as objfile, open(zipfile) as z:
+            objfile.write('{"file":')
+            base64.encode(z, tf)
+            objfile.write('}')
+        so = {'type': 'HtmlFileSetUtils.HtmlFileSet',
+              'data_json_file': tf
+              }
+        if name:
+            so['name'] = name
+        else:
+            so['objid'] = objid
+        wsio = WsLargeDataIO(self.callback_url)
+        ret = wsio.save_objects({'id': wsid,
+                                 'objects': [so]
+                                 })[0]
+        out = {'obj_ref': str(ret[6]) + '/' + str(ret[0]) + '/' + str(ret[4])}
         #END upload_html_set
 
         # At some point might do deeper type checking...
@@ -67,7 +118,10 @@ class HTMLFileSetUtils:
 
     def status(self, ctx):
         #BEGIN_STATUS
-        returnVal = {'state': "OK", 'message': "", 'version': self.VERSION, 
-                     'git_url': self.GIT_URL, 'git_commit_hash': self.GIT_COMMIT_HASH}
+        del ctx
+        returnVal = {'state': "OK", 'message': "",
+                     'version': self.VERSION,
+                     'git_url': self.GIT_URL,
+                     'git_commit_hash': self.GIT_COMMIT_HASH}
         #END_STATUS
         return [returnVal]

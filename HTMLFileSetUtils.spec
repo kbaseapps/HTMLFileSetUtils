@@ -41,10 +41,10 @@ module HTMLFileSetUtils {
 			version.
 	 */
 	typedef structure {
-		string obj_id;
+		string obj_ref;
 	} UploadHTMLSetOutput;
 	
 	/* Upload an HTML file set to the KBase data stores. */
 	funcdef upload_html_set(UploadHTMLSetInput params)
-		returns(UploadHTMLSetOutput) authentication required;
+		returns(UploadHTMLSetOutput out) authentication required;
 };
