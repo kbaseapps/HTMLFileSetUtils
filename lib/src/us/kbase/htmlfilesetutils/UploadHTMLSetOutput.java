@@ -24,26 +24,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "obj_id"
+    "obj_ref"
 })
 public class UploadHTMLSetOutput {
 
-    @JsonProperty("obj_id")
-    private String objId;
+    @JsonProperty("obj_ref")
+    private String objRef;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("obj_id")
-    public String getObjId() {
-        return objId;
+    @JsonProperty("obj_ref")
+    public String getObjRef() {
+        return objRef;
     }
 
-    @JsonProperty("obj_id")
-    public void setObjId(String objId) {
-        this.objId = objId;
+    @JsonProperty("obj_ref")
+    public void setObjRef(String objRef) {
+        this.objRef = objRef;
     }
 
-    public UploadHTMLSetOutput withObjId(String objId) {
-        this.objId = objId;
+    public UploadHTMLSetOutput withObjRef(String objRef) {
+        this.objRef = objRef;
         return this;
     }
 
@@ -59,7 +59,7 @@ public class UploadHTMLSetOutput {
 
     @Override
     public String toString() {
-        return ((((("UploadHTMLSetOutput"+" [objId=")+ objId)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("UploadHTMLSetOutput"+" [objRef=")+ objRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

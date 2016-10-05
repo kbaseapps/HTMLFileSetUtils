@@ -51,7 +51,7 @@ class HTMLFileSetUtils(object):
            upload_html_set function. obj_ref - a reference to the new
            Workspace object in the form X/Y/Z, where X is the workspace ID, Y
            is the object ID, and Z is the version.) -> structure: parameter
-           "obj_id" of String
+           "obj_ref" of String
         """
         return self._client.call_method(
             'HTMLFileSetUtils.upload_html_set',

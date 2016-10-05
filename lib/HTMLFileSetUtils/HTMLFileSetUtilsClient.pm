@@ -111,7 +111,7 @@ sub new
 
 =head2 upload_html_set
 
-  $return = $obj->upload_html_set($params)
+  $out = $obj->upload_html_set($params)
 
 =over 4
 
@@ -121,7 +121,7 @@ sub new
 
 <pre>
 $params is a HTMLFileSetUtils.UploadHTMLSetInput
-$return is a HTMLFileSetUtils.UploadHTMLSetOutput
+$out is a HTMLFileSetUtils.UploadHTMLSetOutput
 UploadHTMLSetInput is a reference to a hash where the following keys are defined:
 	wsid has a value which is an int
 	wsname has a value which is a string
@@ -129,7 +129,7 @@ UploadHTMLSetInput is a reference to a hash where the following keys are defined
 	name has a value which is a string
 	path has a value which is a string
 UploadHTMLSetOutput is a reference to a hash where the following keys are defined:
-	obj_id has a value which is a string
+	obj_ref has a value which is a string
 
 </pre>
 
@@ -138,7 +138,7 @@ UploadHTMLSetOutput is a reference to a hash where the following keys are define
 =begin text
 
 $params is a HTMLFileSetUtils.UploadHTMLSetInput
-$return is a HTMLFileSetUtils.UploadHTMLSetOutput
+$out is a HTMLFileSetUtils.UploadHTMLSetOutput
 UploadHTMLSetInput is a reference to a hash where the following keys are defined:
 	wsid has a value which is an int
 	wsname has a value which is a string
@@ -146,7 +146,7 @@ UploadHTMLSetInput is a reference to a hash where the following keys are defined
 	name has a value which is a string
 	path has a value which is a string
 UploadHTMLSetOutput is a reference to a hash where the following keys are defined:
-	obj_id has a value which is a string
+	obj_ref has a value which is a string
 
 
 =end text
@@ -407,7 +407,7 @@ Output of the upload_html_set function.
 
 <pre>
 a reference to a hash where the following keys are defined:
-obj_id has a value which is a string
+obj_ref has a value which is a string
 
 </pre>
 
@@ -416,7 +416,7 @@ obj_id has a value which is a string
 =begin text
 
 a reference to a hash where the following keys are defined:
-obj_id has a value which is a string
+obj_ref has a value which is a string
 
 
 =end text

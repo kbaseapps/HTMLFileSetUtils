@@ -168,7 +168,7 @@ public class HTMLFileSetUtilsClient {
      * Upload an HTML file set to the KBase data stores.
      * </pre>
      * @param   params   instance of type {@link us.kbase.htmlfilesetutils.UploadHTMLSetInput UploadHTMLSetInput}
-     * @return   instance of type {@link us.kbase.htmlfilesetutils.UploadHTMLSetOutput UploadHTMLSetOutput}
+     * @return   parameter "out" of type {@link us.kbase.htmlfilesetutils.UploadHTMLSetOutput UploadHTMLSetOutput}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */

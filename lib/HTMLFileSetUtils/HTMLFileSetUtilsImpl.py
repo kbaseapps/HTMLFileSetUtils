@@ -26,7 +26,7 @@ class HTMLFileSetUtils:
     #########################################
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/mrcreosote/HTMLFileSetUtils"
-    GIT_COMMIT_HASH = "ae0cc4b030a8fecc464ca75a4e00fe984e8cc378"
+    GIT_COMMIT_HASH = "1b944d4436faf3aa3dce235ff5aea1783493a0c4"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -57,10 +57,10 @@ class HTMLFileSetUtils:
            upload_html_set function. obj_ref - a reference to the new
            Workspace object in the form X/Y/Z, where X is the workspace ID, Y
            is the object ID, and Z is the version.) -> structure: parameter
-           "obj_id" of String
+           "obj_ref" of String
         """
         # ctx is the context object
-        # return variables are: returnVal
+        # return variables are: out
         #BEGIN upload_html_set
         del ctx
         wsid = params.get('wsid')
@@ -110,11 +110,11 @@ class HTMLFileSetUtils:
         #END upload_html_set
 
         # At some point might do deeper type checking...
-        if not isinstance(returnVal, dict):
+        if not isinstance(out, dict):
             raise ValueError('Method upload_html_set return value ' +
-                             'returnVal is not type dict as required.')
+                             'out is not type dict as required.')
         # return the results
-        return [returnVal]
+        return [out]
 
     def status(self, ctx):
         #BEGIN_STATUS
