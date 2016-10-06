@@ -6,12 +6,14 @@ import requests
 from os import environ
 import shutil
 import os
+import base64
+import zipfile
 try:
     from ConfigParser import ConfigParser  # py2 @UnusedImport
 except:
     from configparser import ConfigParser  # py3 @UnresolvedImport @Reimport
 
-from Workspace.WorkspaceClient import Workspace  # @UnresolvedImport
+from Workspace.WorkspaceClient import Workspace
 from HTMLFileSetUtils.HTMLFileSetUtilsImpl import HTMLFileSetUtils
 from HTMLFileSetUtils.HTMLFileSetUtilsServer import MethodContext
 
@@ -20,14 +22,14 @@ class HTMLFileSetUtilsTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        token = environ.get('KB_AUTH_TOKEN', None)
+        cls.token = environ.get('KB_AUTH_TOKEN', None)
         user_id = requests.post(
             'https://kbase.us/services/authorization/Sessions/Login',
-            data='token={}&fields=user_id'.format(token)).json()['user_id']
+            data='token={}&fields=user_id'.format(cls.token)).json()['user_id']
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
         cls.ctx = MethodContext(None)
-        cls.ctx.update({'token': token,
+        cls.ctx.update({'token': cls.token,
                         'user_id': user_id,
                         'provenance': [
                             {'service': 'HTMLFileSetUtils',
@@ -67,12 +69,13 @@ class HTMLFileSetUtilsTest(unittest.TestCase):
         os.makedirs(tmp_dir)
         self.write_file('uploadtest/in1.txt', 'tar1')
         self.write_file('uploadtest/in2.txt', 'tar2')
-        obj_ref = self.impl.upload_html_set({'wsname': self.ws_info[7],
-                                             'name': 'pants',
-                                             'path': tmp_dir})
+        obj_ref = self.impl.upload_html_set(
+            self.ctx, {'wsname': self.ws_info[1],
+                       'name': 'pants',
+                       'path': tmp_dir})[0]['obj_ref']
         newobj = self.ws.get_objects([{'ref': obj_ref}])[0]['data']
-        print(newobj)
-        # TODO check contents
-#         with tarfile.open(new_file_path) as t:
-#             self.assertEqual(set(t.getnames()),
-#                              set(['.', './intar1.txt', './intar2.txt']))
+        zipf = base64.b64decode(newobj['file'])
+        tf = self.write_file('uploadtestout', zipf)
+        with zipfile.ZipFile(tf) as z:
+            self.assertEqual(set(z.namelist()),
+                             set(['in1.txt', 'in2.txt']))

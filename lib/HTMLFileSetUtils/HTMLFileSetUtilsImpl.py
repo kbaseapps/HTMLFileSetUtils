@@ -6,6 +6,7 @@ import os
 import tempfile
 import base64
 from WsLargeDataIO.WsLargeDataIOClient import WsLargeDataIO
+import time
 #END_HEADER
 
 
@@ -29,13 +30,22 @@ class HTMLFileSetUtils:
     GIT_COMMIT_HASH = "1b944d4436faf3aa3dce235ff5aea1783493a0c4"
 
     #BEGIN_CLASS_HEADER
+    MAX_ZIP_SIZE = 500000000
+
+    def log(self, message, prefix_newline=False):
+        print(('\n' if prefix_newline else '') +
+              str(time.time()) + ': ' + message)
+
+    def xor(self, a, b):
+        return bool(a) != bool(b)
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
-        self.callback_url = config['SDK_CALLBACK_URL']
+        self.callback_url = os.environ['SDK_CALLBACK_URL']
+        self.scratch = config['scratch']
         #END_CONSTRUCTOR
         pass
 
@@ -89,23 +99,36 @@ class HTMLFileSetUtils:
             raise ValueError("No, you can't zip up the root directory")
         if not os.path.isdir(htmlpath):
             raise ValueError('path must be a directory')
-        zipfile = dfu.pack_file({'file_path': htmlpath, 'pack': 'zip'})
-        tf = tempfile.mkstemp()
-        with open(tf, 'w') as objfile, open(zipfile) as z:
-            objfile.write('{"file":')
-            base64.encode(z, tf)
-            objfile.write('}')
-        so = {'type': 'HtmlFileSetUtils.HtmlFileSet',
+        zipfile = dfu.pack_file({'file_path': htmlpath,
+                                 'pack': 'zip'})['file_path']
+        if os.path.getsize(zipfile) > self.MAX_ZIP_SIZE:
+            os.remove(zipfile)
+            raise ValueError('Zipfile from specified directory is greater ' +
+                             'than maximum size allowed: ' +
+                             str(self.MAX_ZIP_SIZE))
+        fh, tf = tempfile.mkstemp(dir=self.scratch)
+        os.close(fh)
+        with open(tf, 'w') as objfile, open(zipfile, 'rb') as z:
+            objfile.write('{"file":"')
+            chunk = 8048
+            d = z.read(chunk)
+            while d:
+                objfile.write(base64.b64encode(d))
+                d = z.read(chunk)
+            objfile.write('"}')
+        os.remove(zipfile)
+        so = {'type': 'HTMLFileSetUtils.HTMLFileSet-0.1',  # TODO release
               'data_json_file': tf
               }
         if name:
             so['name'] = name
         else:
             so['objid'] = objid
-        wsio = WsLargeDataIO(self.callback_url)
+        wsio = WsLargeDataIO(self.callback_url, service_ver='dev')  # TODO remove dev @IgnorePep8
         ret = wsio.save_objects({'id': wsid,
                                  'objects': [so]
                                  })[0]
+        os.remove(tf)
         out = {'obj_ref': str(ret[6]) + '/' + str(ret[0]) + '/' + str(ret[4])}
         #END upload_html_set
 

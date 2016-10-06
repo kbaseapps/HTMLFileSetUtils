@@ -7,6 +7,10 @@ MAINTAINER KBase Developer
 
 # RUN apt-get update
 
+RUN pip install ipython \
+    && apt-get install nano \
+    && apt-get install tree
+
 # -----------------------------------------
 
 COPY ./ /kb/module
