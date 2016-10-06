@@ -32,8 +32,8 @@ class HTMLFileSetUtils:
     #BEGIN_CLASS_HEADER
     MAX_ZIP_SIZE = 500000000
 
-    # needs to be a multiple of 48 to handle b64 encoding correctly
-    CHUNKSIZE = 48 * 200
+    # needs to be a multiple of 3 to handle b64 encoding correctly
+    CHUNKSIZE = 3 * 300
 
     def log(self, message, prefix_newline=False):
         print(('\n' if prefix_newline else '') +

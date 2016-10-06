@@ -97,7 +97,7 @@ class HTMLFileSetUtilsTest(unittest.TestCase):
 
     def test_upload_small_chunks(self):
         chz = HTMLFileSetUtils.CHUNKSIZE
-        HTMLFileSetUtils.CHUNKSIZE = 48 * 2
+        HTMLFileSetUtils.CHUNKSIZE = 3 * 31
         tmp_dir = os.path.join(self.cfg['scratch'], 'uploadtestsmall')
         os.makedirs(tmp_dir)
         self.write_file('uploadtestsmall/in1.txt', 'tar1')
