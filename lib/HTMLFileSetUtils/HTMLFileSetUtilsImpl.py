@@ -98,8 +98,6 @@ class HTMLFileSetUtils:
         if not htmlpath:
             raise ValueError('path parameter is required')
         htmlpath = os.path.abspath(os.path.expanduser(htmlpath))
-        if htmlpath == os.path.sep:
-            raise ValueError("No, you can't zip up the root directory")
         if not os.path.isdir(htmlpath):
             raise ValueError('path must be a directory')
         zipfile = dfu.pack_file({'file_path': htmlpath,
