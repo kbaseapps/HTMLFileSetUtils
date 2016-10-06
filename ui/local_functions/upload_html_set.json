@@ -1,0 +1,16 @@
+{
+    "name" : "Upload a set of HTML files.",
+    "short_description" : "Upload a set of HTML files to KBase.",
+    "long_description" : "Uploads a set of HTML files to the KBase data stores.",
+    "tags" : {
+        "categories" : ["upload", "HTML"],
+        "input": {
+            "file_types": ["HTML"],
+            "kb_types": []
+        },
+        "output": {
+            "file_types": [],
+            "kb_types": ["HTMLFileSetUtils.HTMLFileSet"]
+        }
+    }
+}
