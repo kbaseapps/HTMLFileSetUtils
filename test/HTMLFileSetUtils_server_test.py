@@ -73,9 +73,41 @@ class HTMLFileSetUtilsTest(unittest.TestCase):
             self.ctx, {'wsname': self.ws_info[1],
                        'name': 'pants',
                        'path': tmp_dir})[0]['obj_ref']
-        newobj = self.ws.get_objects([{'ref': obj_ref}])[0]['data']
-        zipf = base64.b64decode(newobj['file'])
+        encf = self.ws.get_objects([{'ref': obj_ref}])[0]['data']['file']
+        zipf = base64.b64decode(encf)
         tf = self.write_file('uploadtestout', zipf)
         with zipfile.ZipFile(tf) as z:
             self.assertEqual(set(z.namelist()),
                              set(['in1.txt', 'in2.txt']))
+
+        # now that an object exists in the ws, can test with an object id
+        self.write_file('uploadtest/in3.txt', 'tar3')
+        obj_ref = self.impl.upload_html_set(
+            self.ctx, {'wsid': self.ws_info[0],
+                       'objid': 1,
+                       'path': tmp_dir})[0]['obj_ref']
+        encf = self.ws.get_objects([{'ref': obj_ref}])[0]['data']['file']
+        zipf = base64.b64decode(encf)
+        tf = self.write_file('uploadtestout', zipf)
+        with zipfile.ZipFile(tf) as z:
+            self.assertEqual(set(z.namelist()),
+                             set(['in1.txt', 'in2.txt', 'in3.txt']))
+
+    def test_upload_small_chunks(self):
+        chz = HTMLFileSetUtils.CHUNKSIZE
+        HTMLFileSetUtils.CHUNKSIZE = 48 * 2
+        tmp_dir = os.path.join(self.cfg['scratch'], 'uploadtestsmall')
+        os.makedirs(tmp_dir)
+        self.write_file('uploadtestsmall/in1.txt', 'tar1')
+        self.write_file('uploadtestsmall/in2.txt', 'tar2')
+        obj_ref = self.impl.upload_html_set(
+            self.ctx, {'wsname': self.ws_info[1],
+                       'name': 'whee',
+                       'path': tmp_dir})[0]['obj_ref']
+        encf = self.ws.get_objects([{'ref': obj_ref}])[0]['data']['file']
+        zipf = base64.b64decode(encf)
+        tf = self.write_file('uploadtestsmallout', zipf)
+        with zipfile.ZipFile(tf) as z:
+            self.assertEqual(set(z.namelist()),
+                             set(['in1.txt', 'in2.txt']))
+        HTMLFileSetUtils.CHUNKSIZE = chz

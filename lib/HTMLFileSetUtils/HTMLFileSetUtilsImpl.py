@@ -32,6 +32,9 @@ class HTMLFileSetUtils:
     #BEGIN_CLASS_HEADER
     MAX_ZIP_SIZE = 500000000
 
+    # needs to be a multiple of 48 to handle b64 encoding correctly
+    CHUNKSIZE = 48 * 200
+
     def log(self, message, prefix_newline=False):
         print(('\n' if prefix_newline else '') +
               str(time.time()) + ': ' + message)
@@ -110,11 +113,10 @@ class HTMLFileSetUtils:
         os.close(fh)
         with open(tf, 'w') as objfile, open(zipfile, 'rb') as z:
             objfile.write('{"file":"')
-            chunk = 8048
-            d = z.read(chunk)
+            d = z.read(self.CHUNKSIZE)
             while d:
                 objfile.write(base64.b64encode(d))
-                d = z.read(chunk)
+                d = z.read(self.CHUNKSIZE)
             objfile.write('"}')
         os.remove(zipfile)
         so = {'type': 'HTMLFileSetUtils.HTMLFileSet-0.1',  # TODO release
